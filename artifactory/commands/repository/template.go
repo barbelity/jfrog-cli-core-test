@@ -8,8 +8,8 @@ import (
 	"strings"
 
 	"github.com/c-bata/go-prompt"
-	"github.com/jfrog/jfrog-cli/artifactory/commands/utils"
-	"github.com/jfrog/jfrog-cli/utils/config"
+	"github.com/jfrog/jfrog-cli-core/artifactory/commands/utils"
+	"github.com/jfrog/jfrog-cli-core/utils/config"
 	"github.com/jfrog/jfrog-client-go/utils/errorutils"
 	"github.com/jfrog/jfrog-client-go/utils/log"
 )
@@ -162,7 +162,7 @@ const (
 	ComposerDefaultRepoLayout = "composer-default"
 	ConanDefaultRepoLayout    = "conan-default"
 	GoDefaultRepoLayout       = "go-default"
-	GradleDefaultRepoLayout   = "maven-2-default"
+	GradleDefaultRepoLayout   = "gradle-default"
 	IvyDefaultRepoLayout      = "ivy-default"
 	Maven1DefaultRepoLayout   = "maven-1-default"
 	Maven2DefaultRepoLayout   = "maven-2-default"

@@ -16,10 +16,10 @@ import (
 	"github.com/buger/jsonparser"
 	gofrogcmd "github.com/jfrog/gofrog/io"
 	"github.com/jfrog/gofrog/parallel"
-	"github.com/jfrog/jfrog-cli/artifactory/utils"
-	"github.com/jfrog/jfrog-cli/artifactory/utils/npm"
-	"github.com/jfrog/jfrog-cli/utils/config"
-	"github.com/jfrog/jfrog-cli/utils/ioutils"
+	"github.com/jfrog/jfrog-cli-core/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/artifactory/utils/npm"
+	"github.com/jfrog/jfrog-cli-core/utils/config"
+	"github.com/jfrog/jfrog-cli-core/utils/ioutils"
 	"github.com/jfrog/jfrog-client-go/artifactory"
 	"github.com/jfrog/jfrog-client-go/artifactory/buildinfo"
 	serviceutils "github.com/jfrog/jfrog-client-go/artifactory/services/utils"
@@ -525,7 +525,6 @@ func (nca *NpmCommandArgs) createGetDependencyInfoFunc(servicesManager *artifact
 			if err != nil {
 				return err
 			}
-			defer stream.Close()
 			result, err := ioutil.ReadAll(stream)
 			if err != nil {
 				return err

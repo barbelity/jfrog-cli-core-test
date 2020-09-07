@@ -2,13 +2,11 @@ package replication
 
 import (
 	"encoding/json"
-	"errors"
-	"strings"
 
-	"github.com/jfrog/jfrog-cli/artifactory/commands/utils"
-	rtUtils "github.com/jfrog/jfrog-cli/artifactory/utils"
-	"github.com/jfrog/jfrog-cli/utils/cliutils"
-	"github.com/jfrog/jfrog-cli/utils/config"
+	"github.com/jfrog/jfrog-cli-core/artifactory/commands/utils"
+	rtUtils "github.com/jfrog/jfrog-cli-core/artifactory/utils"
+	"github.com/jfrog/jfrog-cli-core/utils/coreutils"
+	"github.com/jfrog/jfrog-cli-core/utils/config"
 	"github.com/jfrog/jfrog-client-go/artifactory/services"
 	"github.com/jfrog/jfrog-client-go/utils/errorutils"
 	"github.com/jfrog/jfrog-client-go/utils/io/fileutils"
@@ -54,8 +52,8 @@ func (rcc *ReplicationCreateCommand) Run() (err error) {
 	}
 	// Replace vars string-by-string if needed
 	if len(rcc.vars) > 0 {
-		templateVars := cliutils.SpecVarsStringToMap(rcc.vars)
-		content = cliutils.ReplaceVars(content, templateVars)
+		templateVars := coreutils.SpecVarsStringToMap(rcc.vars)
+		content = coreutils.ReplaceVars(content, templateVars)
 	}
 	// Unmarshal template to a map
 	var replicationConfigMap map[string]interface{}
@@ -91,14 +89,9 @@ func (rcc *ReplicationCreateCommand) Run() (err error) {
 	if err != nil {
 		return err
 	}
-	// In case 'serverId' is not found, pull replication will be assumed.
 	if serverId != "" {
-		if targetRepo, ok := replicationConfigMap["targetRepoKey"]; ok {
-			if err = updateArtifactoryInfo(&params, serverId, targetRepo.(string)); err != nil {
-				return err
-			}
-		} else {
-			return errorutils.CheckError(errors.New("expected 'targetRepoKey' field in the json template file."))
+		if err = updateArtifactoryInfo(&params, serverId); err != nil {
+			return err
 		}
 	}
 	return servicesManager.CreateReplication(params)
@@ -113,19 +106,18 @@ func fillMissingDefaultValue(replicationConfigMap map[string]interface{}) {
 	}
 }
 
-func updateArtifactoryInfo(param *services.CreateReplicationParams, serverId, targetRepo string) error {
+func updateArtifactoryInfo(param *services.CreateReplicationParams, serverId string) error {
 	singleConfig, err := config.GetArtifactorySpecificConfig(serverId, true, false)
 	if err != nil {
 		return err
 	}
-	param.Url, param.Password, param.Username = strings.TrimSuffix(singleConfig.GetUrl(), "/")+"/"+targetRepo, singleConfig.GetPassword(), singleConfig.GetUser()
+	param.Url, param.Password, param.Username = singleConfig.GetUrl(), singleConfig.GetPassword(), singleConfig.GetUser()
 	return nil
 }
 
 var writersMap = map[string]utils.AnswerWriter{
 	ServerId:               utils.WriteStringAnswer,
 	RepoKey:                utils.WriteStringAnswer,
-	TargetRepoKey:          utils.WriteStringAnswer,
 	CronExp:                utils.WriteStringAnswer,
 	EnableEventReplication: utils.WriteBoolAnswer,
 	Enabled:                utils.WriteBoolAnswer,

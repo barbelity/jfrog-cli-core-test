@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 
 	"github.com/c-bata/go-prompt"
-	"github.com/jfrog/jfrog-cli/artifactory/commands/utils"
-	"github.com/jfrog/jfrog-cli/utils/config"
+	"github.com/jfrog/jfrog-cli-core/artifactory/commands/utils"
+	"github.com/jfrog/jfrog-cli-core/utils/config"
 	"github.com/jfrog/jfrog-client-go/utils/errorutils"
 	"github.com/jfrog/jfrog-client-go/utils/log"
 )
@@ -27,7 +27,6 @@ const (
 	ServerId               = "serverId"
 	CronExp                = "cronExp"
 	RepoKey                = "repoKey"
-	TargetRepoKey          = "targetRepoKey"
 	EnableEventReplication = "enableEventReplication"
 	Enabled                = "enabled"
 	SyncDeletes            = "syncDeletes"
@@ -57,16 +56,6 @@ func (rtc *ReplicationTemplateCommand) CommandName() string {
 func (rtc *ReplicationTemplateCommand) RtDetails() (*config.ArtifactoryDetails, error) {
 	// Since it's a local command, usage won't be reported.
 	return nil, nil
-}
-
-func getArtifactoryServerIds() []prompt.Suggest {
-	suggest := make([]prompt.Suggest, 0)
-	if configurations, _ := config.GetAllArtifactoryConfigs(); configurations != nil {
-		for _, conf := range configurations {
-			suggest = append(suggest, prompt.Suggest{Text: conf.ServerId})
-		}
-	}
-	return suggest
 }
 
 func (rtc *ReplicationTemplateCommand) Run() (err error) {
@@ -104,7 +93,7 @@ var questionMap = map[string]utils.QuestionInfo{
 		},
 		Msg:          "",
 		PromptPrefix: "Select the template type >",
-		AllowVars:    false,
+		AllowVars:    true,
 		Writer:       nil,
 		MapKey:       "",
 		Callback:     nil,
@@ -115,32 +104,23 @@ var questionMap = map[string]utils.QuestionInfo{
 			{Text: Push, Description: "Push replication"},
 		},
 		Msg:          "",
-		PromptPrefix: "Select replication job type" + utils.PressTabMsg,
-		AllowVars:    false,
+		PromptPrefix: "Select job type >",
+		AllowVars:    true,
 		Writer:       nil,
 		MapKey:       "",
 		Callback:     jobTypeCallback,
 	},
 	RepoKey: {
 		Msg:          "",
-		PromptPrefix: "Enter source repo key >",
+		PromptPrefix: "Enter repo key >",
 		AllowVars:    true,
 		Writer:       utils.WriteStringAnswer,
 		MapKey:       RepoKey,
 		Callback:     nil,
 	},
-	TargetRepoKey: {
-		Msg:          "",
-		PromptPrefix: "Enter target repo key >",
-		AllowVars:    true,
-		Writer:       utils.WriteStringAnswer,
-		MapKey:       TargetRepoKey,
-		Callback:     nil,
-	},
 	ServerId: {
-		Options:      getArtifactoryServerIds(),
 		Msg:          "",
-		PromptPrefix: "Enter target server id" + utils.PressTabMsg,
+		PromptPrefix: "Enter server id >",
 		AllowVars:    true,
 		Writer:       utils.WriteStringAnswer,
 		MapKey:       ServerId,
@@ -148,7 +128,7 @@ var questionMap = map[string]utils.QuestionInfo{
 	},
 	CronExp: {
 		Msg:          "",
-		PromptPrefix: "Enter cron expression for frequency (for example, 0 0 12 * * ? will replicate daily) >",
+		PromptPrefix: "Enter cron expression >",
 		AllowVars:    true,
 		Writer:       utils.WriteStringAnswer,
 		MapKey:       CronExp,
@@ -162,7 +142,7 @@ var questionMap = map[string]utils.QuestionInfo{
 	PathPrefix: {
 		Msg:          "",
 		PromptPrefix: "Enter path prefix >",
-		AllowVars:    true,
+		AllowVars:    false,
 		Writer:       utils.WriteStringAnswer,
 		MapKey:       PathPrefix,
 		Callback:     nil,
@@ -170,7 +150,7 @@ var questionMap = map[string]utils.QuestionInfo{
 	SocketTimeoutMillis: {
 		Msg:          "",
 		PromptPrefix: "Enter socket timeout millis >",
-		AllowVars:    true,
+		AllowVars:    false,
 		Writer:       utils.WriteStringAnswer,
 		MapKey:       SocketTimeoutMillis,
 		Callback:     nil,
@@ -178,12 +158,13 @@ var questionMap = map[string]utils.QuestionInfo{
 }
 
 func jobTypeCallback(iq *utils.InteractiveQuestionnaire, jobType string) (string, error) {
+	iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, CronExp)
 	if jobType == Pull {
-		iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, CronExp)
+		iq.OptionalKeysSuggests = getAllPossibleOptionalRepoConfKeys()
 	} else {
-		iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, TargetRepoKey, ServerId, CronExp)
+		iq.MandatoryQuestionsKeys = append(iq.MandatoryQuestionsKeys, ServerId)
+		iq.OptionalKeysSuggests = getAllPossibleOptionalRepoConfKeys()
 	}
-	iq.OptionalKeysSuggests = getAllPossibleOptionalRepoConfKeys()
 	return "", nil
 }
 
@@ -206,7 +187,6 @@ var suggestionMap = map[string]prompt.Suggest{
 	utils.SaveAndExit:      {Text: utils.SaveAndExit},
 	ServerId:               {Text: ServerId},
 	RepoKey:                {Text: RepoKey},
-	TargetRepoKey:          {Text: TargetRepoKey},
 	CronExp:                {Text: CronExp},
 	EnableEventReplication: {Text: EnableEventReplication},
 	Enabled:                {Text: Enabled},

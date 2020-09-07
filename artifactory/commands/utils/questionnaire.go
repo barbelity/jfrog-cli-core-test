@@ -2,11 +2,10 @@ package utils
 
 import (
 	"fmt"
+	"github.com/jfrog/jfrog-cli-core/utils/coreutils"
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/jfrog/jfrog-cli/utils/cliutils"
 
 	"github.com/c-bata/go-prompt"
 )
@@ -57,7 +56,7 @@ const (
 	PressTabMsg      = " (press Tab for options):"
 	InvalidAnswerMsg = "Invalid answer. Please select value from the suggestions list."
 	VariableUseMsg   = " You may use dynamic variable in the form of ${key}."
-	EmptyValueMsg    = "The value cannot be empty. Please enter a valid value."
+	EmptyValueMsg    = "The value cannot be empty. Please enter a valid value:"
 	OptionalKey      = "OptionalKey"
 	SaveAndExit      = ":x"
 
@@ -93,24 +92,20 @@ func interruptKeyBind() prompt.Option {
 // Otherwise, answer cannot be empty.
 // Variable aren't checked and can be part of the answer.
 func AskStringWithDefault(msg, promptPrefix, defaultValue string) string {
-	return askString(msg, promptPrefix, defaultValue, false, false)
+	return askString(msg, promptPrefix, defaultValue, false)
 }
 
 // Ask question with free string answer, allow an empty string as an answer
-func AskString(msg, promptPrefix string, allowEmpty bool, allowVars bool) string {
-	return askString(msg, promptPrefix, "", allowEmpty, allowVars)
+func AskString(msg, promptPrefix string, allowEmpty bool) string {
+	return askString(msg, promptPrefix, "", allowEmpty)
 }
 
 // Ask question with free string answer.
 // If an empty answer is allowed, the answer returned as is,
 // if not and a default value was provided, the default value is returned.
-func askString(msg, promptPrefix, defaultValue string, allowEmpty bool, allowVars bool) string {
+func askString(msg, promptPrefix, defaultValue string, allowEmpty bool) string {
 	if msg != "" {
 		fmt.Println(msg + ":")
-	}
-	errMsg := EmptyValueMsg
-	if allowVars {
-		errMsg += VariableUseMsg
 	}
 	promptPrefix = addDefaultValueToPrompt(promptPrefix, defaultValue)
 	for {
@@ -123,7 +118,7 @@ func askString(msg, promptPrefix, defaultValue string, allowEmpty bool, allowVar
 		if defaultValue != "" {
 			return defaultValue
 		}
-		fmt.Println(errMsg)
+		fmt.Println(EmptyValueMsg)
 	}
 }
 
@@ -186,7 +181,7 @@ func AskFromListWithMismatchConfirmation(promptPrefix, misMatchMsg string, optio
 				return answer
 			}
 		}
-		if cliutils.AskYesNo(misMatchMsg+" continue anyway?", false) {
+		if coreutils.AskYesNo(misMatchMsg+" continue anyway?", false) {
 			return answer
 		}
 	}
@@ -201,7 +196,7 @@ func (iq *InteractiveQuestionnaire) AskQuestion(question QuestionInfo) (value st
 	if question.Options != nil {
 		answer = AskFromList(question.Msg, question.PromptPrefix, question.AllowVars, question.Options, "")
 	} else {
-		answer = AskString(question.Msg, question.PromptPrefix, false, question.AllowVars)
+		answer = AskString(question.Msg, question.PromptPrefix, false)
 	}
 	if question.Writer != nil {
 		err = question.Writer(&iq.AnswersMap, question.MapKey, answer)
