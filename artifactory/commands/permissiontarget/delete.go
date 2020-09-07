@@ -2,8 +2,8 @@ package permissiontarget
 
 import (
 	rtUtils "github.com/jfrog/jfrog-cli-core/artifactory/utils"
-	"github.com/jfrog/jfrog-cli-core/utils/coreutils"
 	"github.com/jfrog/jfrog-cli-core/utils/config"
+	"github.com/jfrog/jfrog-cli-core/utils/coreutils"
 )
 
 type PermissionTargetDeleteCommand struct {

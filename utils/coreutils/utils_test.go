@@ -109,12 +109,13 @@ func assertVariablesMap(expected, actual []byte, t *testing.T) {
 }
 
 type yesNoCases struct {
-	ans string
-	def bool
+	ans            string
+	def            bool
 	expectedParsed bool
-	expectedValid bool
-	testName string
+	expectedValid  bool
+	testName       string
 }
+
 func TestParseYesNo(t *testing.T) {
 	cases := []yesNoCases{
 		// Positive answer.
