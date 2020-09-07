@@ -19,14 +19,9 @@ require (
 	github.com/pkg/term v0.0.0-20190109203006-aa71e9d9e942 // indirect
 	github.com/spf13/viper v1.2.1
 	github.com/stretchr/testify v1.4.0
-	github.com/vbauerster/mpb/v4 v4.7.0 // indirect
 	golang.org/x/crypto v0.0.0-20190510104115-cbcb75029529
 	golang.org/x/mod v0.1.0
 	gopkg.in/yaml.v2 v2.2.2
 )
 
-replace github.com/jfrog/jfrog-client-go => github.com/jfrog/jfrog-client-go v0.12.1-0.20200810063808-45f30a866b8f
-
-// replace github.com/jfrog/gocmd => github.com/jfrog/gocmd v0.1.15-0.20200525160901-de2df438f4c2
-
-// replace github.com/jfrog/gofrog => github.com/jfrog/gofrog v1.0.6
+replace github.com/jfrog/jfrog-client-go => github.com/jfrog/jfrog-client-go v0.13.3-0.20200907115924-c7dacd8219de
