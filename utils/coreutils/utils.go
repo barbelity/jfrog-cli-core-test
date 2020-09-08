@@ -30,7 +30,7 @@ var version string
 // Name of the agent, i.e 'jfrog-cli-go'.
 var clientAgent string
 
-/*func init() {
+func init() {
 	// Initialize error handling.
 	if os.Getenv(ErrorHandling) == string(OnErrorPanic) {
 		errorutils.CheckError = PanicOnError
@@ -42,13 +42,7 @@ var clientAgent string
 		cliTempDir = os.TempDir()
 	}
 	fileutils.SetTempDirBase(cliTempDir)
-
-	// Initialize agent name and version.
-	cliUserAgent = os.Getenv(UserAgent)
-	if cliUserAgent == "" {
-		cliUserAgent = ClientAgent + "/" + CliVersion
-	}
-}*/
+}
 
 // Exit codes:
 type ExitCode struct {

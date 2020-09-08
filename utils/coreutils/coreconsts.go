@@ -2,6 +2,9 @@ package coreutils
 
 const (
 
+	// General core constants
+	OnErrorPanic OnError = "panic"
+
 	// Common
 	TokenRefreshDisabled        = 0
 	TokenRefreshDefaultInterval = 60
@@ -17,6 +20,8 @@ const (
 	JfrogLockDirName         = "lock"
 
 	// Env
+	ErrorHandling   = "JFROG_CLI_ERROR_HANDLING"
+	TempDir         = "JFROG_CLI_TEMP_DIR"
 	LogLevel        = "JFROG_CLI_LOG_LEVEL"
 	ReportUsage     = "JFROG_CLI_REPORT_USAGE"
 	HomeDir         = "JFROG_CLI_HOME_DIR"
